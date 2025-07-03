@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,123 +15,216 @@
         .navbar-brand {
             font-weight: bold;
         }
+
         .sidebar {
             min-height: calc(100vh - 76px);
             background-color: #f8f9fa;
         }
+
         .main-content {
             min-height: calc(100vh - 76px);
         }
+
         .card {
             border: none;
             box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
         }
+
         .card-header {
             background-color: #f8f9fa;
             border-bottom: 1px solid #dee2e6;
         }
+
         .btn-primary {
             background-color: #0d6efd;
             border-color: #0d6efd;
         }
+
         .btn-primary:hover {
             background-color: #0b5ed7;
             border-color: #0a58ca;
         }
+
         .alert {
             border: none;
             border-radius: 0.375rem;
         }
+
         .stats-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
+
         .stats-card-2 {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             color: white;
         }
+
         .stats-card-3 {
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             color: white;
         }
+
         .stats-card-4 {
             background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
             color: white;
         }
+
         .footer {
             background-color: #343a40;
             color: white;
             padding: 2rem 0;
             margin-top: auto;
         }
+
         body {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
         }
+
         .content-wrapper {
             flex: 1;
+        }
+
+        .navbar-nav .nav-link {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover,
+        .navbar-nav .nav-link.active {
+            background-color: rgba(255 255 255 / 0.15);
+            color: #fff !important;
+        }
+
+        .dropdown-menu .dropdown-item:hover {
+            background-color: #311991;
+            color: #fff;
         }
     </style>
 
     {% block extra_css %}{% endblock %}
 </head>
+
 <body>
 
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #311991;">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'students:dashboard' %}">
-                <i class="fas fa-graduation-cap me-2"></i>Course Management System
+            <a class="navbar-brand d-flex align-items-center fs-4 fw-semibold text-white"
+                href="{% url 'students:dashboard' %}">
+                <i class="fas fa-graduation-cap me-2" style="font-size: 1.5rem;"></i>
+                Course Management System
             </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     {% if user.is_authenticated %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'students:dashboard' %}"><i class="fas fa-tachometer-alt me-1"></i>Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'students:course_list' %}"><i class="fas fa-book me-1"></i>Courses</a></li>
-                        {% if not user.is_staff %}
-                            <li class="nav-item"><a class="nav-link" href="{% url 'students:my_courses' %}"><i class="fas fa-user-graduate me-1"></i>My Courses</a></li>
-                        {% endif %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'students:upload_file' %}"><i class="fas fa-upload me-1"></i>Upload File</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'students:my_files' %}"><i class="fas fa-folder me-1"></i>My Files</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center fw-bold text-white fs-5 px-3 py-2 rounded"
+                            href="{% url 'students:dashboard' %}">
+                            <i class="fas fa-tachometer-alt me-2" style="color: #4fc3f7;"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center fw-bold text-white fs-5 px-3 py-2 rounded"
+                            href="{% url 'students:course_list' %}">
+                            <i class="fas fa-book me-2" style="color: #ffb74d;"></i>
+                            Courses
+                        </a>
+                    </li>
+                    {% if not user.is_staff %}
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center fw-bold text-white fs-5 px-3 py-2 rounded"
+                            href="{% url 'students:my_courses' %}">
+                            <i class="fas fa-user-graduate me-2" style="color: #81c784;"></i>
+                            My Courses
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center fw-bold text-white fs-5 px-3 py-2 rounded"
+                            href="{% url 'students:upload_file' %}">
+                            <i class="fas fa-upload me-2" style="color: #e57373;"></i>
+                            Upload File
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center fw-bold text-white fs-5 px-3 py-2 rounded"
+                            href="{% url 'students:my_files' %}">
+                            <i class="fas fa-folder me-2" style="color: #fff176;"></i>
+                            My Files
+                        </a>
+                    </li>
                     {% endif %}
                 </ul>
 
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-bs-toggle="dropdown">
-                                <i class="fas fa-user me-1"></i>{{ user.get_full_name|default:user.username }}
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="{% url 'students:profile' %}"><i class="fas fa-user-edit me-1"></i>Profile</a></li>
-                                {% if user.is_staff %}
-                                    <li><a class="dropdown-item" href="/admin/"><i class="fas fa-cog me-1"></i>Admin Panel</a></li>
-                                {% endif %}
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{% url 'students:logout' %}"><i class="fas fa-sign-out-alt me-1"></i>Logout</a></li>
-                            </ul>
-                        </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center fw-semibold text-white fs-5"
+                            href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user me-2" style="color: #b39ddb;"></i>
+                            {{ user.get_full_name|default:user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown"
+                            style="min-width: 12rem;">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="{% url 'students:profile' %}">
+                                    <i class="fas fa-user-edit me-2"></i> Profile
+                                </a>
+                            </li>
+                            {% if user.is_staff %}
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="/admin/">
+                                    <i class="fas fa-cog me-2"></i> Admin Panel
+                                </a>
+                            </li>
+                            {% endif %}
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center text-danger"
+                                    href="{% url 'students:logout' %}">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                     {% else %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'students:login' %}"><i class="fas fa-sign-in-alt me-1"></i>Login</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'students:register' %}"><i class="fas fa-user-plus me-1"></i>Register</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold text-white fs-5 px-3 py-2 rounded" href="{% url 'students:login' %}">
+                            <i class="fas fa-sign-in-alt me-2" style="color: #64b5f6;"></i> Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold text-white fs-5 px-3 py-2 rounded"
+                            href="{% url 'students:register' %}">
+                            <i class="fas fa-user-plus me-2" style="color: #aed581;"></i> Register
+                        </a>
+                    </li>
                     {% endif %}
                 </ul>
+
             </div>
         </div>
     </nav>
+
 
     <!-- Search Bar -->
     {% if user.is_authenticated %}
     <div class="bg-light border-bottom">
         <div class="container py-2">
             <form method="GET" action="{% url 'students:search_courses' %}" class="d-flex">
-                <input class="form-control me-2" type="search" name="q" placeholder="Search courses..." value="{{ request.GET.q }}">
+                <input class="form-control me-2" type="search" name="q" placeholder="Search courses..."
+                    value="{{ request.GET.q }}">
                 <button class="btn btn-outline-primary" type="submit"><i class="fas fa-search"></i></button>
             </form>
         </div>
@@ -141,10 +235,10 @@
     {% if messages %}
     <div class="container mt-3">
         {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
         {% endfor %}
     </div>
     {% endif %}
@@ -166,12 +260,12 @@
                     <h5>Quick Links</h5>
                     <ul class="list-unstyled">
                         {% if user.is_authenticated %}
-                            <li><a href="{% url 'students:dashboard' %}" class="text-light">Dashboard</a></li>
-                            <li><a href="{% url 'students:course_list' %}" class="text-light">Courses</a></li>
-                            <li><a href="{% url 'students:profile' %}" class="text-light">Profile</a></li>
+                        <li><a href="{% url 'students:dashboard' %}" class="text-light">Dashboard</a></li>
+                        <li><a href="{% url 'students:course_list' %}" class="text-light">Courses</a></li>
+                        <li><a href="{% url 'students:profile' %}" class="text-light">Profile</a></li>
                         {% else %}
-                            <li><a href="{% url 'students:login' %}" class="text-light">Login</a></li>
-                            <li><a href="{% url 'students:register' %}" class="text-light">Register</a></li>
+                        <li><a href="{% url 'students:login' %}" class="text-light">Login</a></li>
+                        <li><a href="{% url 'students:register' %}" class="text-light">Register</a></li>
                         {% endif %}
                     </ul>
                 </div>
@@ -188,4 +282,5 @@
 
     {% block extra_js %}{% endblock %}
 </body>
+
 </html>

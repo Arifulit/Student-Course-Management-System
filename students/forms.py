@@ -163,42 +163,85 @@ class CourseEnrollmentForm(forms.ModelForm):
         return cleaned_data
 
 
-class FileUploadForm(forms.ModelForm):
-    """Form for file uploads"""
+# class FileUploadForm(forms.ModelForm):
+#     """Form for file uploads"""
     
+#     class Meta:
+#         model = FileUpload
+#         fields = ['file', 'course', 'description']
+#         widgets = {
+#             'file': forms.FileInput(attrs={'class': 'form-control'}),
+#             'course': forms.Select(attrs={'class': 'form-control'}),
+#             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3})
+#         }
+
+#     def __init__(self, user=None, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.user = user
+        
+#         # If user is a student, only show courses they're enrolled in
+#         if user and hasattr(user, 'student'):
+#             enrolled_courses = Enrollment.objects.filter(
+#                 student=user.student, is_active=True
+#             ).values_list('course', flat=True)
+#             self.fields['course'].queryset = Course.objects.filter(id__in=enrolled_courses)
+#         elif user and user.is_staff:
+#             # Staff can upload to any course
+#             self.fields['course'].queryset = Course.objects.filter(is_active=True)
+#         else:
+#             self.fields['course'].queryset = Course.objects.none()
+        
+#         self.fields['course'].empty_label = "Select a course"
+#         self.fields['description'].required = False
+
+#     def clean_file(self):
+#         file = self.cleaned_data.get('file')
+#         if file:
+#             # Check file size (max 10MB)
+#             if file.size > 10 * 1024 * 1024:
+#                 raise forms.ValidationError("File size cannot exceed 10MB.")
+#         return file
+
+
+class FileUploadForm(forms.ModelForm):
+    """Form for uploading files to courses"""
+
     class Meta:
         model = FileUpload
         fields = ['file', 'course', 'description']
         widgets = {
-            'file': forms.FileInput(attrs={'class': 'form-control'}),
+            'file': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'course': forms.Select(attrs={'class': 'form-control'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3})
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
 
     def __init__(self, user=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.user = user
-        
-        # If user is a student, only show courses they're enrolled in
+
+        # Dynamically filter course choices
         if user and hasattr(user, 'student'):
+            # Only show courses the student is enrolled in and active
             enrolled_courses = Enrollment.objects.filter(
                 student=user.student, is_active=True
-            ).values_list('course', flat=True)
-            self.fields['course'].queryset = Course.objects.filter(id__in=enrolled_courses)
+            ).values_list('course_id', flat=True)
+            self.fields['course'].queryset = Course.objects.filter(
+                id__in=enrolled_courses, is_active=True
+            )
         elif user and user.is_staff:
-            # Staff can upload to any course
+            # Staff can upload to any active course
             self.fields['course'].queryset = Course.objects.filter(is_active=True)
         else:
+            # Other users get no options
             self.fields['course'].queryset = Course.objects.none()
-        
+
         self.fields['course'].empty_label = "Select a course"
         self.fields['description'].required = False
 
     def clean_file(self):
         file = self.cleaned_data.get('file')
         if file:
-            # Check file size (max 10MB)
-            if file.size > 10 * 1024 * 1024:
+            if file.size > 10 * 1024 * 1024:  # 10 MB
                 raise forms.ValidationError("File size cannot exceed 10MB.")
         return file
 

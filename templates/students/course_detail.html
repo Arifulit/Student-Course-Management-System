@@ -1,12 +1,18 @@
 {% extends 'base.html' %}
+{% if file.can_be_deleted %} 
+{% load static %}
+{% load humanize %}
+{% load i18n %}
 
+{% block extra_head %}
 {% block title %}{{ course.title }} - Course Management System{% endblock %}
 
 {% block content %}
 <div class="container py-4">
     <div class="row">
         <div class="col-md-8">
-            <div class="card">
+            <!-- Course Info Card -->
+            <div class="card mb-4">
                 <div class="card-header">
                     <h3>{{ course.course_code }} - {{ course.title }}</h3>
                 </div>
@@ -20,7 +26,7 @@
                                 <li><strong>Instructor:</strong> {{ course.instructor }}</li>
                                 <li><strong>Credits:</strong> {{ course.credits }}</li>
                                 <li><strong>Max Students:</strong> {{ course.max_students }}</li>
-                                <li><strong>Enrolled:</strong> {{ course.enrolled_students_count }}</li>
+                                <li><strong>Enrolled:</strong> {{ enrollments.count }}</li>
                             </ul>
                         </div>
                         <div class="col-md-6">
@@ -42,7 +48,7 @@
                             {% else %}
                                 <div class="alert alert-warning">
                                     <i class="fas fa-exclamation-triangle me-2"></i>
-                                    {% if course.enrolled_students_count >= course.max_students %}
+                                    {% if enrollments.count >= course.max_students %}
                                         Course is full
                                     {% else %}
                                         You cannot enroll in this course
@@ -54,8 +60,8 @@
                 </div>
             </div>
             
-            <!-- Course Files -->
-            <div class="card mt-4">
+            <!-- Course Files Card -->
+            <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5><i class="fas fa-folder me-2"></i>Course Materials</h5>
                     {% if is_enrolled or user.is_staff %}
@@ -86,17 +92,17 @@
                                                     <br><small class="text-muted">{{ file.description }}</small>
                                                 {% endif %}
                                             </td>
-                                            <td>{{ file.uploaded_by.get_full_name }}</td>
+                                            <td>{{ file.uploaded_by.get_full_name|default:file.uploaded_by.username }}</td>
                                             <td>{{ file.timestamp|date:"M d, Y" }}</td>
-                                            <td>{{ file.file_size|filesizeformat }}</td>
+                                            <td>{{ file.file.size|filesizeformat }}</td>
                                             <td>
                                                 {% if is_enrolled or user.is_staff %}
-                                                    <a href="{% url 'students:download_file' file.id %}" class="btn btn-outline-primary btn-sm">
+                                                    <a href="{% url 'students:download_file' file.id %}" class="btn btn-outline-primary btn-sm" title="Download">
                                                         <i class="fas fa-download"></i>
                                                     </a>
                                                 {% endif %}
-                                                {% if file.can_delete:user %}
-                                                    <a href="{% url 'students:delete_file' file.id %}" class="btn btn-outline-danger btn-sm">
+                                                {% if file.can_delete(user) %}
+                                                    <a href="{% url 'students:delete_file' file.id %}" class="btn btn-outline-danger btn-sm" title="Delete">
                                                         <i class="fas fa-trash"></i>
                                                     </a>
                                                 {% endif %}
@@ -118,7 +124,7 @@
         </div>
         
         <div class="col-md-4">
-            <!-- Enrolled Students -->
+            <!-- Enrolled Students Card -->
             <div class="card">
                 <div class="card-header">
                     <h5><i class="fas fa-users me-2"></i>Enrolled Students</h5>
@@ -129,7 +135,7 @@
                             {% for enrollment in enrollments %}
                                 <div class="list-group-item d-flex justify-content-between align-items-center">
                                     <div>
-                                        <h6 class="mb-1">{{ enrollment.student.user.get_full_name }}</h6>
+                                        <h6 class="mb-1">{{ enrollment.student.user.get_full_name|default:enrollment.student.user.username }}</h6>
                                         <small class="text-muted">{{ enrollment.student.student_id }}</small>
                                     </div>
                                     {% if enrollment.grade %}

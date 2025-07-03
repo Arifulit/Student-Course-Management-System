@@ -133,23 +133,55 @@ def course_list(request):
 
 
 @login_required
+# def course_detail(request, course_id):
+#     """Course detail view"""
+#     course = get_object_or_404(Course, id=course_id, is_active=True)
+
+
+    
+#     # Get enrolled students
+#     enrollments = Enrollment.objects.filter(course=course, is_active=True).select_related('student__user')
+    
+#     # Check if current user is enrolled
+#     is_enrolled = False
+#     if hasattr(request.user, 'student'):
+#         is_enrolled = Enrollment.objects.filter(
+#             student=request.user.student, course=course, is_active=True
+#         ).exists()
+    
+    
+#     # Get course files
+#     files = FileUpload.objects.filter(course=course).select_related('uploaded_by').order_by('-timestamp')
+    
+#     context = {
+#         'course': course,
+#         'enrollments': enrollments,
+#         'is_enrolled': is_enrolled,
+#         'files': files,
+#         'can_enroll': course.can_enroll() and not is_enrolled and hasattr(request.user, 'student'),
+#     }
+    
+#     return render(request, 'students/course_detail.html', context)
+
 def course_detail(request, course_id):
     """Course detail view"""
     course = get_object_or_404(Course, id=course_id, is_active=True)
-    
+
     # Get enrolled students
     enrollments = Enrollment.objects.filter(course=course, is_active=True).select_related('student__user')
-    
+
     # Check if current user is enrolled
     is_enrolled = False
     if hasattr(request.user, 'student'):
         is_enrolled = Enrollment.objects.filter(
             student=request.user.student, course=course, is_active=True
         ).exists()
-    
-    # Get course files
+
+    # Get course files and add can_be_deleted attribute
     files = FileUpload.objects.filter(course=course).select_related('uploaded_by').order_by('-timestamp')
-    
+    for file in files:
+        file.can_be_deleted = file.can_delete(request.user)
+
     context = {
         'course': course,
         'enrollments': enrollments,
@@ -157,9 +189,8 @@ def course_detail(request, course_id):
         'files': files,
         'can_enroll': course.can_enroll() and not is_enrolled and hasattr(request.user, 'student'),
     }
-    
-    return render(request, 'students/course_detail.html', context)
 
+    return render(request, 'students/course_detail.html', context)
 
 @login_required
 def enroll_course(request, course_id):
@@ -219,9 +250,24 @@ def unenroll_course(request, course_id):
     return redirect('students:dashboard')
 
 
+# @login_required
+# def upload_file(request):
+#     """Upload file to a course"""
+#     if request.method == 'POST':
+#         form = FileUploadForm(request.POST, request.FILES, user=request.user)
+#         if form.is_valid():
+#             file_upload = form.save(commit=False)
+#             file_upload.uploaded_by = request.user
+#             file_upload.save()
+#             messages.success(request, 'File uploaded successfully!')
+#             return redirect('students:course_detail', course_id=file_upload.course.id)
+#     else:
+#         form = FileUploadForm(user=request.user)
+    
+#     return render(request, 'students/upload_file.html', {'form': form})
+
 @login_required
 def upload_file(request):
-    """Upload file to a course"""
     if request.method == 'POST':
         form = FileUploadForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
@@ -232,9 +278,8 @@ def upload_file(request):
             return redirect('students:course_detail', course_id=file_upload.course.id)
     else:
         form = FileUploadForm(user=request.user)
-    
-    return render(request, 'students/upload_file.html', {'form': form})
 
+    return render(request, 'students/upload_file.html', {'form': form})
 
 @login_required
 def download_file(request, file_id):
