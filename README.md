@@ -2,10 +2,6 @@
 
 A comprehensive Django web application for managing student courses, enrollments, and file sharing.
 
-## Student Information
-- **Name:** [Your Name]
-- **Student ID:** [Your Student ID]
-
 ## Features
 
 ### For Students:
