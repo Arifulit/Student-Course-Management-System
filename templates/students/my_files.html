@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}My Files - Course Management System{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3">
+                    <i class="fas fa-folder me-2"></i>My Files
+                </h1>
+                <a href="{% url 'students:upload_file' %}" class="btn btn-primary">
+                    <i class="fas fa-upload me-1"></i>Upload File
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% if files %}
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>File Name</th>
+                                        <th>Course</th>
+                                        <th>Upload Date</th>
+                                        <th>Size</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for file in files %}
+                                        <tr>
+                                            <td>
+                                                <i class="fas fa-file me-2"></i>{{ file.file_name }}
+                                                {% if file.description %}
+                                                    <br><small class="text-muted">{{ file.description }}</small>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'students:course_detail' file.course.id %}">
+                                                    {{ file.course.course_code }}
+                                                </a>
+                                            </td>
+                                            <td>{{ file.timestamp|date:"M d, Y H:i" }}</td>
+                                            <td>{{ file.file_size|filesizeformat }}</td>
+                                            <td>
+                                                <a href="{% url 'students:download_file' file.id %}" class="btn btn-outline-primary btn-sm">
+                                                    <i class="fas fa-download"></i>
+                                                </a>
+                                                <a href="{% url 'students:delete_file' file.id %}" class="btn btn-outline-danger btn-sm">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="row">
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No files uploaded yet</h5>
+                    <p class="text-muted">Upload your first file to get started!</p>
+                    <a href="{% url 'students:upload_file' %}" class="btn btn-primary">
+                        <i class="fas fa-upload me-1"></i>Upload File
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Welcome - Course Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <!-- Hero Section -->
+    <div class="row bg-primary text-white py-5">
+        <div class="col-12 text-center">
+            <h1 class="display-4 fw-bold">
+                <i class="fas fa-graduation-cap me-3"></i>Welcome to Course Management System
+            </h1>
+            <p class="lead">Streamline your educational journey with our comprehensive course management platform</p>
+            <div class="mt-4">
+                <a href="{% url 'students:register' %}" class="btn btn-light btn-lg me-3">
+                    <i class="fas fa-user-plus me-2"></i>Get Started
+                </a>
+                <a href="{% url 'students:login' %}" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row py-5">
+        <div class="col-12">
+            <div class="container">
+                <h2 class="text-center mb-5">Why Choose Our Platform?</h2>
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 text-center">
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <i class="fas fa-book-open fa-3x text-primary"></i>
+                                </div>
+                                <h5 class="card-title">Course Management</h5>
+                                <p class="card-text">Easily browse, enroll, and manage your courses with our intuitive interface.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 text-center">
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-success"></i>
+                                </div>
+                                <h5 class="card-title">File Sharing</h5>
+                                <p class="card-text">Upload, download, and share course materials securely with your classmates.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 text-center">
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <i class="fas fa-users fa-3x text-info"></i>
+                                </div>
+                                <h5 class="card-title">Student Community</h5>
+                                <p class="card-text">Connect with fellow students and instructors in a collaborative environment.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Section -->
+    <div class="row bg-light py-5">
+        <div class="col-12">
+            <div class="container">
+                <h2 class="text-center mb-5">Platform Statistics</h2>
+                <div class="row">
+                    <div class="col-md-3 mb-4">
+                        <div class="card stats-card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-users fa-2x mb-3"></i>
+                                <h3>1,200+</h3>
+                                <p>Active Students</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="card stats-card-2 text-center">
+                            <div class="card-body">
+                                <i class="fas fa-book fa-2x mb-3"></i>
+                                <h3>150+</h3>
+                                <p>Available Courses</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="card stats-card-3 text-center">
+                            <div class="card-body">
+                                <i class="fas fa-chalkboard-teacher fa-2x mb-3"></i>
+                                <h3>80+</h3>
+                                <p>Expert Instructors</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="card stats-card-4 text-center">
+                            <div class="card-body">
+                                <i class="fas fa-file-alt fa-2x mb-3"></i>
+                                <h3>5,000+</h3>
+                                <p>Course Materials</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="row py-5">
+        <div class="col-12 text-center">
+            <div class="container">
+                <h2 class="mb-4">Ready to Start Your Learning Journey?</h2>
+                <p class="lead mb-4">Join thousands of students already using our platform to enhance their educational experience.</p>
+                <a href="{% url 'students:register' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-rocket me-2"></i>Create Your Account Now
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

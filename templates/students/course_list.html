@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Courses - Course Management System{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3">
+                    <i class="fas fa-book me-2"></i>Available Courses
+                </h1>
+                {% if user.is_staff %}
+                    <a href="/admin/students/course/add/" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i>Add Course
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for course in courses %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ course.course_code }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ course.title }}</h6>
+                        <p class="card-text">{{ course.description|truncatewords:15 }}</p>
+                        
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                <i class="fas fa-user me-1"></i>{{ course.instructor }}<br>
+                                <i class="fas fa-star me-1"></i>{{ course.credits }} Credits<br>
+                                <i class="fas fa-users me-1"></i>{{ course.enrolled_students_count }}/{{ course.max_students }} Students
+                            </small>
+                        </div>
+                        
+                        {% if not user.is_staff %}
+                            <div class="mb-2">
+                                {% if course.is_enrolled %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check me-1"></i>Enrolled
+                                    </span>
+                                {% elif course.can_enroll_now %}
+                                    <span class="badge bg-primary">
+                                        <i class="fas fa-plus me-1"></i>Available
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-times me-1"></i>Full/Enrolled
+                                    </span>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'students:course_detail' course.id %}" class="btn btn-outline-primary">
+                                View Details
+                            </a>
+                            {% if not user.is_staff and course.can_enroll_now %}
+                                <a href="{% url 'students:enroll_course' course.id %}" class="btn btn-primary">
+                                    <i class="fas fa-plus me-1"></i>Enroll
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No courses available</h5>
+                    <p class="text-muted">Check back later for new courses!</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

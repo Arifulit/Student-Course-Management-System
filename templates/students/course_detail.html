@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ course.title }} - Course Management System{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>{{ course.course_code }} - {{ course.title }}</h3>
+                </div>
+                <div class="card-body">
+                    <p class="lead">{{ course.description }}</p>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Course Information</h5>
+                            <ul class="list-unstyled">
+                                <li><strong>Instructor:</strong> {{ course.instructor }}</li>
+                                <li><strong>Credits:</strong> {{ course.credits }}</li>
+                                <li><strong>Max Students:</strong> {{ course.max_students }}</li>
+                                <li><strong>Enrolled:</strong> {{ course.enrolled_students_count }}</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Enrollment Status</h5>
+                            {% if is_enrolled %}
+                                <div class="alert alert-success">
+                                    <i class="fas fa-check-circle me-2"></i>You are enrolled in this course
+                                </div>
+                                <a href="{% url 'students:unenroll_course' course.id %}" class="btn btn-outline-danger">
+                                    <i class="fas fa-times me-1"></i>Unenroll
+                                </a>
+                            {% elif can_enroll %}
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>You can enroll in this course
+                                </div>
+                                <a href="{% url 'students:enroll_course' course.id %}" class="btn btn-primary">
+                                    <i class="fas fa-plus me-1"></i>Enroll Now
+                                </a>
+                            {% else %}
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    {% if course.enrolled_students_count >= course.max_students %}
+                                        Course is full
+                                    {% else %}
+                                        You cannot enroll in this course
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Course Files -->
+            <div class="card mt-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5><i class="fas fa-folder me-2"></i>Course Materials</h5>
+                    {% if is_enrolled or user.is_staff %}
+                        <a href="{% url 'students:upload_file' %}?course={{ course.id }}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-upload me-1"></i>Upload File
+                        </a>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% if files %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>File Name</th>
+                                        <th>Uploaded By</th>
+                                        <th>Date</th>
+                                        <th>Size</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for file in files %}
+                                        <tr>
+                                            <td>
+                                                <i class="fas fa-file me-2"></i>{{ file.file_name }}
+                                                {% if file.description %}
+                                                    <br><small class="text-muted">{{ file.description }}</small>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ file.uploaded_by.get_full_name }}</td>
+                                            <td>{{ file.timestamp|date:"M d, Y" }}</td>
+                                            <td>{{ file.file_size|filesizeformat }}</td>
+                                            <td>
+                                                {% if is_enrolled or user.is_staff %}
+                                                    <a href="{% url 'students:download_file' file.id %}" class="btn btn-outline-primary btn-sm">
+                                                        <i class="fas fa-download"></i>
+                                                    </a>
+                                                {% endif %}
+                                                {% if file.can_delete:user %}
+                                                    <a href="{% url 'students:delete_file' file.id %}" class="btn btn-outline-danger btn-sm">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No files uploaded yet</h5>
+                            <p class="text-muted">Course materials will appear here once uploaded.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <!-- Enrolled Students -->
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-users me-2"></i>Enrolled Students</h5>
+                </div>
+                <div class="card-body">
+                    {% if enrollments %}
+                        <div class="list-group list-group-flush">
+                            {% for enrollment in enrollments %}
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">{{ enrollment.student.user.get_full_name }}</h6>
+                                        <small class="text-muted">{{ enrollment.student.student_id }}</small>
+                                    </div>
+                                    {% if enrollment.grade %}
+                                        <span class="badge bg-primary">{{ enrollment.grade }}</span>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No students enrolled yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Course Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="h3 mb-4">
+                <i class="fas fa-tachometer-alt me-2"></i>
+                {% if is_admin %}Admin Dashboard{% else %}Student Dashboard{% endif %}
+            </h1>
+        </div>
+    </div>
+
+    {% if is_admin %}
+        <!-- Admin Dashboard -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-users fa-2x mb-2"></i>
+                        <h4>{{ total_students }}</h4>
+                        <p class="mb-0">Total Students</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card-2">
+                    <div class="card-body text-center">
+                        <i class="fas fa-book fa-2x mb-2"></i>
+                        <h4>{{ total_courses }}</h4>
+                        <p class="mb-0">Total Courses</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card-3">
+                    <div class="card-body text-center">
+                        <i class="fas fa-user-graduate fa-2x mb-2"></i>
+                        <h4>{{ total_enrollments }}</h4>
+                        <p class="mb-0">Active Enrollments</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card-4">
+                    <div class="card-body text-center">
+                        <i class="fas fa-file-alt fa-2x mb-2"></i>
+                        <h4>{{ total_files }}</h4>
+                        <p class="mb-0">Uploaded Files</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-clock me-2"></i>Recent Enrollments</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if recent_enrollments %}
+                            <div class="list-group list-group-flush">
+                                {% for enrollment in recent_enrollments %}
+                                    <div class="list-group-item">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1">{{ enrollment.student.user.get_full_name }}</h6>
+                                            <small>{{ enrollment.enrollment_date|date:"M d, Y" }}</small>
+                                        </div>
+                                        <p class="mb-1">{{ enrollment.course.title }}</p>
+                                        <small class="text-muted">{{ enrollment.course.course_code }}</small>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted">No recent enrollments.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-upload me-2"></i>Recent File Uploads</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if recent_files %}
+                            <div class="list-group list-group-flush">
+                                {% for file in recent_files %}
+                                    <div class="list-group-item">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1">{{ file.file_name }}</h6>
+                                            <small>{{ file.timestamp|date:"M d, Y" }}</small>
+                                        </div>
+                                        <p class="mb-1">{{ file.course.title }}</p>
+                                        <small class="text-muted">By {{ file.uploaded_by.get_full_name }}</small>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted">No recent file uploads.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% else %}
+        <!-- Student Dashboard -->
+        <div class="row mb-4">
+            <div class="col-md-4 mb-3">
+                <div class="card stats-card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-book fa-2x mb-2"></i>
+                        <h4>{{ enrolled_courses_count }}</h4>
+                        <p class="mb-0">Enrolled Courses</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card stats-card-2">
+                    <div class="card-body text-center">
+                        <i class="fas fa-plus fa-2x mb-2"></i>
+                        <h4>{{ 5|add:enrolled_courses_count|add:"-5" }}</h4>
+                        <p class="mb-0">Remaining Slots</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card stats-card-3">
+                    <div class="card-body text-center">
+                        <i class="fas fa-user fa-2x mb-2"></i>
+                        <h4>{{ student.student_id }}</h4>
+                        <p class="mb-0">Student ID</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5><i class="fas fa-graduation-cap me-2"></i>My Courses</h5>
+                        {% if can_enroll_more %}
+                            <a href="{% url 'students:course_list' %}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus me-1"></i>Enroll in Course
+                            </a>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        {% if enrollments %}
+                            <div class="row">
+                                {% for enrollment in enrollments %}
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h6 class="card-title">{{ enrollment.course.course_code }}</h6>
+                                                <p class="card-text">{{ enrollment.course.title }}</p>
+                                                <p class="text-muted small">
+                                                    <i class="fas fa-user me-1"></i>{{ enrollment.course.instructor }}<br>
+                                                    <i class="fas fa-calendar me-1"></i>{{ enrollment.enrollment_date|date:"M d, Y" }}
+                                                </p>
+                                                <div class="d-flex justify-content-between">
+                                                    <a href="{% url 'students:course_detail' enrollment.course.id %}" class="btn btn-outline-primary btn-sm">
+                                                        View Details
+                                                    </a>
+                                                    <a href="{% url 'students:unenroll_course' enrollment.course.id %}" class="btn btn-outline-danger btn-sm">
+                                                        Unenroll
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">No courses enrolled yet</h5>
+                                <p class="text-muted">Start your learning journey by enrolling in a course!</p>
+                                <a href="{% url 'students:course_list' %}" class="btn btn-primary">
+                                    <i class="fas fa-plus me-1"></i>Browse Courses
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-file-alt me-2"></i>Recent Files</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if recent_files %}
+                            <div class="list-group list-group-flush">
+                                {% for file in recent_files %}
+                                    <div class="list-group-item px-0">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1">{{ file.file_name|truncatechars:20 }}</h6>
+                                            <small>{{ file.timestamp|date:"M d" }}</small>
+                                        </div>
+                                        <p class="mb-1 small">{{ file.course.course_code }}</p>
+                                        <small class="text-muted">{{ file.uploaded_by.get_full_name }}</small>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted">No recent files.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

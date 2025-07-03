@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Results - Course Management System{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="h3 mb-4">
+                <i class="fas fa-search me-2"></i>Search Results
+                {% if query %}
+                    for "{{ query }}"
+                {% endif %}
+            </h1>
+        </div>
+    </div>
+
+    {% if courses %}
+        <div class="row">
+            {% for course in courses %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ course.course_code }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">{{ course.title }}</h6>
+                            <p class="card-text">{{ course.description|truncatewords:15 }}</p>
+                            
+                            <div class="mb-3">
+                                <small class="text-muted">
+                                    <i class="fas fa-user me-1"></i>{{ course.instructor }}<br>
+                                    <i class="fas fa-star me-1"></i>{{ course.credits }} Credits<br>
+                                    <i class="fas fa-users me-1"></i>{{ course.enrolled_students_count }}/{{ course.max_students }} Students
+                                </small>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'students:course_detail' course.id %}" class="btn btn-outline-primary">
+                                    View Details
+                                </a>
+                                {% if not user.is_staff and course.can_enroll %}
+                                    <a href="{% url 'students:enroll_course' course.id %}" class="btn btn-primary">
+                                        <i class="fas fa-plus me-1"></i>Enroll
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="row">
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No courses found</h5>
+                    {% if query %}
+                        <p class="text-muted">Try searching with different keywords.</p>
+                    {% else %}
+                        <p class="text-muted">Enter a search term to find courses.</p>
+                    {% endif %}
+                    <a href="{% url 'students:course_list' %}" class="btn btn-primary">
+                        <i class="fas fa-book me-1"></i>Browse All Courses
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
