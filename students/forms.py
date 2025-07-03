@@ -4,6 +4,59 @@ from django.contrib.auth.models import User
 from .models import Student, Course, Enrollment, FileUpload
 
 
+# class StudentRegistrationForm(UserCreationForm):
+#     """Form for student registration"""
+#     email = forms.EmailField(required=True)
+#     first_name = forms.CharField(max_length=30, required=True)
+#     last_name = forms.CharField(max_length=30, required=True)
+#     student_id = forms.CharField(max_length=20, required=True)
+#     phone = forms.CharField(max_length=15, required=False)
+#     date_of_birth = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
+#     address = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=False)
+
+#     class Meta:
+#         model = User
+#         fields = ['username', 'email', 'first_name', 'last_name', 'password1', 'password2']
+
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         # Add CSS classes for styling
+#         for field_name, field in self.fields.items():
+#             field.widget.attrs['class'] = 'form-control'
+#             if field_name == 'address':
+#                 field.widget.attrs['class'] = 'form-control'
+#                 field.widget.attrs['rows'] = 3
+
+#     def clean_student_id(self):
+#         student_id = self.cleaned_data['student_id']
+#         if Student.objects.filter(student_id=student_id).exists():
+#             raise forms.ValidationError("Student ID already exists.")
+#         return student_id
+
+#     def clean_email(self):
+#         email = self.cleaned_data['email']
+#         if User.objects.filter(email=email).exists():
+#             raise forms.ValidationError("Email already exists.")
+#         return email
+
+#     def save(self, commit=True):
+#         user = super().save(commit=False)
+#         user.email = self.cleaned_data['email']
+#         user.first_name = self.cleaned_data['first_name']
+#         user.last_name = self.cleaned_data['last_name']
+        
+#         if commit:
+#             user.save()
+#             # Create Student profile
+#             Student.objects.create(
+#                 user=user,
+#                 student_id=self.cleaned_data['student_id'],
+#                 phone=self.cleaned_data.get('phone', ''),
+#                 date_of_birth=self.cleaned_data.get('date_of_birth'),
+#                 address=self.cleaned_data.get('address', '')
+#             )
+#         return user
+
 class StudentRegistrationForm(UserCreationForm):
     """Form for student registration"""
     email = forms.EmailField(required=True)
@@ -20,11 +73,9 @@ class StudentRegistrationForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Add CSS classes for styling
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
             if field_name == 'address':
-                field.widget.attrs['class'] = 'form-control'
                 field.widget.attrs['rows'] = 3
 
     def clean_student_id(self):
@@ -47,13 +98,15 @@ class StudentRegistrationForm(UserCreationForm):
         
         if commit:
             user.save()
-            # Create Student profile
-            Student.objects.create(
+            # Safe student creation (avoids duplicate user_id)
+            Student.objects.get_or_create(
                 user=user,
-                student_id=self.cleaned_data['student_id'],
-                phone=self.cleaned_data.get('phone', ''),
-                date_of_birth=self.cleaned_data.get('date_of_birth'),
-                address=self.cleaned_data.get('address', '')
+                defaults={
+                    'student_id': self.cleaned_data['student_id'],
+                    'phone': self.cleaned_data.get('phone', ''),
+                    'date_of_birth': self.cleaned_data.get('date_of_birth'),
+                    'address': self.cleaned_data.get('address', '')
+                }
             )
         return user
 

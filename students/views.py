@@ -18,20 +18,39 @@ def home(request):
     return render(request, 'students/home.html')
 
 
+# def register(request):
+#     """Student registration view"""
+#     if request.method == 'POST':
+#         form = StudentRegistrationForm(request.POST)
+#         if form.is_valid():
+#             user = form.save()
+#             username = form.cleaned_data.get('username')
+#             messages.success(request, f'Account created for {username}! You can now log in.')
+#             return redirect('students:login')
+#     else:
+#         form = StudentRegistrationForm()
+    
+#     return render(request, 'students/register.html', {'form': form})
+
+
 def register(request):
     """Student registration view"""
     if request.method == 'POST':
         form = StudentRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            username = form.cleaned_data.get('username')
-            messages.success(request, f'Account created for {username}! You can now log in.')
-            return redirect('students:login')
+            try:
+                user = form.save()
+                username = user.username
+                messages.success(request, f'Account created for {username}! You can now log in.')
+                return redirect('students:login')
+            except Exception as e:
+                messages.error(request, f'Registration failed: {e}')
+        else:
+            messages.error(request, 'Please correct the errors below.')
     else:
         form = StudentRegistrationForm()
     
     return render(request, 'students/register.html', {'form': form})
-
 
 def login_view(request):
     """Login view"""
